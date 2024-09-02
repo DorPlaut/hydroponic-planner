@@ -1,0 +1,390 @@
+// Constants for visual clarity
+const TUBE_RADIUS = 0.05;
+const RESERVOIR_COLOR = '#0000ff';
+const TUBE_COLOR = '#ffffff';
+const TUBE_CAP_COLOR = '#cccccc';
+const ELBOW_COLOR = '#dddddd';
+const CONNECTOR_COLOR = '#eeeeee';
+
+// PART COMPONENTS
+
+// PVC tube
+function Tube({ position, rotation, args, color = TUBE_COLOR }) {
+  return (
+    <mesh position={position} rotation={rotation}>
+      <cylinderGeometry args={args} />
+      <meshPhongMaterial color={color} />
+    </mesh>
+  );
+}
+
+// PVC tube cap
+function TubeCap({ position, rotation, radius, color = TUBE_CAP_COLOR }) {
+  const expandedRadius = radius * 1.1;
+  return (
+    <mesh position={position} rotation={rotation}>
+      <cylinderGeometry
+        args={[expandedRadius, expandedRadius, expandedRadius * 0.2, 32]}
+      />
+      <meshPhongMaterial color={color} />
+    </mesh>
+  );
+}
+
+// PVC 90deg elbow
+function Elbow({ position, rotation, radius, color = ELBOW_COLOR }) {
+  return (
+    <group
+      position={[position[0], position[1] - radius, position[2]]}
+      rotation={rotation}
+    >
+      <mesh position={[radius, 0, 0]} rotation={[0, 0, angleToRadians(90)]}>
+        <torusGeometry
+          args={[radius * 2, radius * 1.1, 16, 32, angleToRadians(90)]}
+        />
+        <meshPhongMaterial color={color} side={THREE.DoubleSide} />
+      </mesh>
+    </group>
+  );
+}
+
+// PVC tube connector
+function TubeConnector({
+  position,
+  rotation,
+  radius,
+  length,
+  color = CONNECTOR_COLOR,
+}) {
+  return (
+    <mesh position={position} rotation={rotation}>
+      <cylinderGeometry args={[radius * 1.1, radius * 1.1, length, 32]} />
+      <meshPhongMaterial color={color} />
+    </mesh>
+  );
+}
+
+// Reservoir
+function Reservoir({ position, size, color = RESERVOIR_COLOR }) {
+  const reservoirRadius = 0.25;
+  return (
+    <mesh position={position} rotation={[0, 0, 0]}>
+      <cylinderGeometry
+        args={[reservoirRadius, reservoirRadius, size[1], 32]}
+      />
+      <meshPhongMaterial color={TUBE_COLOR} transparent opacity={0.5} />
+      <mesh position={[0, -0.01, 0]}>
+        <cylinderGeometry
+          args={[
+            reservoirRadius - 0.01,
+            reservoirRadius - 0.01,
+            size[1] - 0.03,
+            32,
+          ]}
+        />
+        <meshPhongMaterial color={color} transparent opacity={0.5} />
+      </mesh>
+      <TubeCap
+        position={[0, size[1] / 2, 0]}
+        rotation={[0, 0, 0]}
+        radius={reservoirRadius}
+        color={TUBE_CAP_COLOR}
+      />
+    </mesh>
+  );
+}
+
+// MAIN HYDROPONIC SYSTEM MODEL
+
+function HydroponicSystemModel({ params }) {
+  const { width, height, numTubes, holesPerTube, holeSize } = params;
+
+  // Calculate reservoir size based on the number of plants
+  const reservoirSize = useMemo(() => {
+    return Math.max(20, numTubes * holesPerTube * 2); // Minimum 20L, 2L per plant
+  }, [numTubes, holesPerTube]);
+
+  // Calculate dimensions
+  const tubeSpacing = height / (numTubes + 1);
+  const tubeLength = width / 100;
+
+  // Calculate reservoir height and position
+  const reservoirHeight = reservoirSize / 100;
+  const reservoirBottomY = -height / 200 - reservoirHeight + 0.1;
+
+  // Render system components
+  return (
+    <group>
+      {/* Main growing tubes */}
+      {Array.from({ length: numTubes }).map((_, i) => {
+        const isIndexEven = i % 2 === 0;
+        const isFirstTube = i === numTubes - 1;
+        return (
+          <group
+            key={i}
+            position={[0, (i + 1) * (tubeSpacing / 100) - height / 200, 0]}
+          >
+            {/* Main horizontal tube */}
+            <Tube
+              position={[0, 0, 0]}
+              rotation={[0, 0, Math.PI / 2]}
+              args={[TUBE_RADIUS, TUBE_RADIUS, tubeLength, 32]}
+            />
+
+            {/* Tube connections and end caps */}
+            {isFirstTube ? (
+              isIndexEven ? (
+                <>
+                  {/* End cap for even-indexed first tube */}
+                  <TubeCap
+                    position={[tubeLength / 2, 0, 0]}
+                    rotation={[0, 0, -Math.PI / 2]}
+                    radius={TUBE_RADIUS}
+                  />
+                  {/* Elbow and vertical tube for even-indexed first tube */}
+                  <Elbow
+                    position={[-tubeLength / 2 - TUBE_RADIUS, -TUBE_RADIUS, 0]}
+                    rotation={[0, 0, 0]}
+                    radius={TUBE_RADIUS}
+                  />
+                  <Tube
+                    position={[
+                      -tubeLength / 2 - TUBE_RADIUS * 2,
+                      -tubeSpacing / 200,
+                      0,
+                    ]}
+                    rotation={[0, 0, 0]}
+                    args={[
+                      TUBE_RADIUS,
+                      TUBE_RADIUS,
+                      tubeSpacing / 100 - TUBE_RADIUS * 4,
+                      32,
+                    ]}
+                  />
+                </>
+              ) : (
+                <>
+                  {/* End cap for odd-indexed first tube */}
+                  <TubeCap
+                    position={[-tubeLength / 2, 0, 0]}
+                    rotation={[0, 0, -Math.PI / 2]}
+                    radius={TUBE_RADIUS}
+                  />
+                  {/* Elbow and vertical tube for odd-indexed first tube */}
+                  <Elbow
+                    position={[tubeLength / 2 + TUBE_RADIUS, -TUBE_RADIUS, 0]}
+                    rotation={[0, angleToRadians(180), angleToRadians(0)]}
+                    radius={TUBE_RADIUS}
+                  />
+                  <Tube
+                    position={[
+                      tubeLength / 2 + TUBE_RADIUS * 2,
+                      -tubeSpacing / 200,
+                      0,
+                    ]}
+                    rotation={[0, 0, 0]}
+                    args={[
+                      TUBE_RADIUS,
+                      TUBE_RADIUS,
+                      tubeSpacing / 100 - TUBE_RADIUS * 4,
+                      32,
+                    ]}
+                  />
+                </>
+              )
+            ) : isIndexEven ? (
+              <>
+                {/* Connections for even-indexed tubes */}
+                <Elbow
+                  position={[-tubeLength / 2 - TUBE_RADIUS, -TUBE_RADIUS, 0]}
+                  rotation={[0, 0, angleToRadians(0)]}
+                  radius={TUBE_RADIUS}
+                />
+                <Tube
+                  position={[
+                    -tubeLength / 2 - TUBE_RADIUS * 2,
+                    -tubeSpacing / 200,
+                    0,
+                  ]}
+                  rotation={[0, 0, 0]}
+                  args={[
+                    TUBE_RADIUS,
+                    TUBE_RADIUS,
+                    tubeSpacing / 100 - TUBE_RADIUS * 4,
+                    32,
+                  ]}
+                />
+                <Elbow
+                  position={[tubeLength / 2, TUBE_RADIUS * 2, 0]}
+                  rotation={[0, angleToRadians(180), angleToRadians(90)]}
+                  radius={TUBE_RADIUS}
+                />
+              </>
+            ) : (
+              <>
+                {/* Connections for odd-indexed tubes */}
+                <Elbow
+                  position={[-tubeLength / 2, TUBE_RADIUS * 2, 0]}
+                  rotation={[0, 0, angleToRadians(90)]}
+                  radius={TUBE_RADIUS}
+                />
+                <Tube
+                  position={[
+                    tubeLength / 2 + TUBE_RADIUS * 2,
+                    -tubeSpacing / 200,
+                    0,
+                  ]}
+                  rotation={[0, 0, 0]}
+                  args={[
+                    TUBE_RADIUS,
+                    TUBE_RADIUS,
+                    tubeSpacing / 100 - TUBE_RADIUS * 4,
+                    32,
+                  ]}
+                />
+                <Elbow
+                  position={[tubeLength / 2 + TUBE_RADIUS, -TUBE_RADIUS, 0]}
+                  rotation={[0, angleToRadians(180), 0]}
+                  radius={TUBE_RADIUS}
+                />
+              </>
+            )}
+
+            {/* Holes for plants */}
+            {/* Holes for plants */}
+            {Array.from({ length: holesPerTube }).map((_, j) => (
+              <mesh
+                key={j}
+                position={[
+                  (j + 1) * (tubeLength / (holesPerTube + 1)) - tubeLength / 2,
+                  TUBE_RADIUS,
+                  0,
+                ]}
+                rotation={[angleToRadians(-90), 0, 0]}
+              >
+                <circleGeometry args={[holeSize / 200, 32]} />
+                <meshBasicMaterial color="#000000" />
+              </mesh>
+            ))}
+          </group>
+        );
+      })}
+
+      {/* Reservoir */}
+      <Reservoir
+        position={[-width / 200, -height / 200 - reservoirSize / 200 + 0.1, 0]}
+        size={[width / 200, reservoirSize / 100, width / 200]}
+      />
+
+      {/* Pump tube from reservoir to top */}
+      <Tube
+        position={[
+          -width / 200 - TUBE_RADIUS * 4,
+          reservoirBottomY +
+            (height / 100 + reservoirHeight) / 2 -
+            tubeSpacing / 200,
+          0,
+        ]}
+        rotation={[0, 0, 0]}
+        args={[
+          TUBE_RADIUS / 2,
+          TUBE_RADIUS / 2,
+          height / 100 + reservoirHeight - tubeSpacing / 100,
+          32,
+        ]}
+      />
+      <Elbow
+        position={[
+          -width / 200 - TUBE_RADIUS * 3.5,
+          height / 200 +
+            reservoirHeight / 100 -
+            tubeSpacing / 100 +
+            TUBE_RADIUS * 2.25,
+          0,
+        ]}
+        rotation={[0, 0, 0]}
+        radius={TUBE_RADIUS / 2}
+      />
+      {/* connect back to system */}
+      {numTubes % 2 === 0 ? (
+        <>
+          <Tube
+            position={[
+              -width / 200 - TUBE_RADIUS * 1.25,
+              height / 200 +
+                reservoirHeight / 100 -
+                tubeSpacing / 100 +
+                TUBE_RADIUS * 2.75,
+              0,
+            ]}
+            rotation={[0, 0, angleToRadians(90)]}
+            args={[TUBE_RADIUS / 2, TUBE_RADIUS / 2, TUBE_RADIUS * 3.75, 32]}
+          />
+          <Elbow
+            position={[
+              -width / 200 + TUBE_RADIUS,
+              height / 200 +
+                reservoirHeight / 100 -
+                tubeSpacing / 100 +
+                TUBE_RADIUS * 2.25,
+              0,
+            ]}
+            rotation={[0, angleToRadians(180), 0]}
+            radius={TUBE_RADIUS / 2}
+          />
+          <Tube
+            position={[
+              -width / 200 + TUBE_RADIUS * 1.5,
+              height / 200 +
+                reservoirHeight / 100 -
+                tubeSpacing / 100 +
+                TUBE_RADIUS * 1.25,
+              0,
+            ]}
+            rotation={[0, 0, 0]}
+            args={[TUBE_RADIUS / 2, TUBE_RADIUS / 2, TUBE_RADIUS * 1.25, 32]}
+          />
+        </>
+      ) : (
+        <>
+          <Tube
+            position={[
+              -TUBE_RADIUS * 3,
+              height / 200 +
+                reservoirHeight / 100 -
+                tubeSpacing / 100 +
+                TUBE_RADIUS * 2.75,
+              0,
+            ]}
+            rotation={[0, 0, angleToRadians(90)]}
+            args={[TUBE_RADIUS / 2, TUBE_RADIUS / 2, width / 100, 32]}
+          />
+          <Elbow
+            position={[
+              width / 200 - TUBE_RADIUS * 2.5,
+              height / 200 +
+                reservoirHeight / 100 -
+                tubeSpacing / 100 +
+                TUBE_RADIUS * 2.25,
+              0,
+            ]}
+            rotation={[0, angleToRadians(180), 0]}
+            radius={TUBE_RADIUS / 2}
+          />
+          <Tube
+            position={[
+              width / 200 - TUBE_RADIUS * 2,
+              height / 200 +
+                reservoirHeight / 100 -
+                tubeSpacing / 100 +
+                TUBE_RADIUS * 1.25,
+              0,
+            ]}
+            rotation={[0, 0, 0]}
+            args={[TUBE_RADIUS / 2, TUBE_RADIUS / 2, TUBE_RADIUS * 1.25, 32]}
+          />
+        </>
+      )}
+    </group>
+  );
+}
