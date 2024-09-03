@@ -795,6 +795,10 @@ function CustomOrbitControls({ blueprintMode }) {
           MIDDLE: THREE.MOUSE.PAN,
           RIGHT: THREE.MOUSE.PAN,
         };
+        controlsRef.current.touches = {
+          ONE: THREE.TOUCH.PAN,
+          TWO: THREE.TOUCH.DOLLY_PAN,
+        };
       } else {
         controlsRef.current.reset();
         controlsRef.current.mouseButtons = {
