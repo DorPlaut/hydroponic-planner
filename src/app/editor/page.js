@@ -5,7 +5,7 @@ import Controls from './Controls';
 import MaterialsList from './MaterialsList';
 import Measurements from './Measurements';
 
-const editorPage = () => {
+const EditorPage = () => {
   const [params, setParams] = useState({
     width: 120, // in cm
     height: 220, // in cm
@@ -111,4 +111,4 @@ const editorPage = () => {
   );
 };
 
-export default editorPage;
+export default EditorPage;
