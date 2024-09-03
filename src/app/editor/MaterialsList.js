@@ -97,11 +97,11 @@ export default function MaterialsList({ params }) {
       </button>
       <div className="materials">
         <h2>Materials List</h2>
-        <ul>
+        <ol>
           {materials.map((item, index) => (
             <li key={index}>{item}</li>
           ))}
-        </ul>
+        </ol>
       </div>
     </div>
   );

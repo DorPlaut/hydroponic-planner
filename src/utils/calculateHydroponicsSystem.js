@@ -15,8 +15,14 @@ export default function calculateHydroponicsSystem(params) {
   const reservoirHeight = reservoirSize / 100;
 
   const verticalTubeLength = tubeSpacing - adjustedTubeRadius * 4;
+
   const pumpTubeLength =
-    adjustedHeight + reservoirHeight - tubeSpacing + adjustedTubeRadius * 2;
+    adjustedHeight +
+    reservoirHeight * 100 -
+    tubeSpacing +
+    adjustedTubeRadius / 2 +
+    0.5;
+
   const horizontalConnectorLength =
     numTubes % 2 === 0
       ? (adjustedWidth - tubeLength) / 2
@@ -42,7 +48,7 @@ export default function calculateHydroponicsSystem(params) {
         },
         small: {
           quantity: 1,
-          length: adjustedTubeRadius * 2 * 1.25,
+          length: adjustedTubeRadius * 1.25,
           diameter: adjustedTubeRadius,
         },
       },

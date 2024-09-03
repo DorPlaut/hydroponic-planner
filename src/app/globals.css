@@ -35,6 +35,7 @@ body {
   border: none;
   cursor: pointer;
   transition: 0.2s;
+  user-select: none;
 }
 /* header */
 
@@ -45,8 +46,10 @@ h1 {
 
 /* Canvas - hydroponic model */
 .canvas-container {
+  position: relative;
   width: 100%;
   background: rgb(255, 255, 255);
+  z-index: 0;
 }
 
 /* Controls */
@@ -98,7 +101,7 @@ h1 {
 .materials-container {
   position: absolute;
   width: 25rem;
-  z-index: 1;
+  z-index: 2;
   background: black;
   padding: 1rem;
   transition: 1s;
@@ -142,4 +145,19 @@ h1 {
   right: -7rem;
   width: 7rem;
   border-radius: 0 var(--borderRadius) var(--borderRadius) 0;
+}
+
+.materials ol {
+  list-style: upper-alpha;
+}
+
+.letter-tag {
+  background: white;
+  border: 1px solid black;
+  /* border-radius: var(--borderRadius); */
+  padding: 0.25rem;
+  user-select: none;
+}
+.letter-tag .length {
+  font-size: 0.5rem;
 }

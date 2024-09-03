@@ -1,164 +1,37 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
-import { Center, OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import {
+  Center,
+  OrbitControls,
+  PerspectiveCamera,
+  Html,
+} from '@react-three/drei';
 import { angleToRadians } from '../../utils/utils';
 import * as THREE from 'three';
 import BackgroundBoard from './BackgroundBoard';
 import { Plant1 } from './plants/Plant1';
 import { Plant2 } from './plants/Plant2';
+import { Elbow, Reservoir, Tube, TubeCap, TubeStrap } from './SystemParts';
 
-// Constants for visual clarity
-const RESERVOIR_COLOR = '#0000ff';
-const TUBE_COLOR = '#ffffff';
-const TUBE_CAP_COLOR = '#cccccc';
-const ELBOW_COLOR = '#dddddd';
-const CONNECTOR_COLOR = '#bbbbbb';
-
-// PART COMPONENTS
-
-// PVC tube
-function Tube({
-  position,
-  rotation,
-  args,
-  color = TUBE_COLOR,
-  children,
-  blueprintMode,
-}) {
-  args[2] = args[2] + 0.02;
-  args[3] = blueprintMode ? 2 : 32;
+// tag letter for blurprint mode
+const LetterTag = ({ position, rotation, letter, length }) => {
   return (
-    <mesh position={position} rotation={rotation}>
-      <cylinderGeometry args={args} />
-      <meshPhongMaterial
-        color={blueprintMode ? 'black' : color}
-        wireframe={blueprintMode}
-      />
-      {children}
-    </mesh>
-  );
-}
-
-// PVC tube cap
-function TubeCap({
-  position,
-  rotation,
-  radius,
-  color = TUBE_CAP_COLOR,
-  blueprintMode,
-}) {
-  const expandedRadius = radius * 1.1;
-  return (
-    <mesh position={position} rotation={rotation}>
-      <cylinderGeometry
-        args={[
-          expandedRadius,
-          expandedRadius,
-          expandedRadius * 0.2,
-          blueprintMode ? 2 : 32,
-        ]}
-      />
-      <meshPhongMaterial
-        color={blueprintMode ? 'black' : color}
-        wireframe={blueprintMode}
-      />
-    </mesh>
-  );
-}
-
-// PVC 90deg elbow
-function Elbow({
-  position,
-  rotation,
-  radius,
-  color = ELBOW_COLOR,
-  blueprintMode,
-}) {
-  return (
-    <group
-      position={[position[0], position[1] - radius, position[2]]}
+    <Html
+      scale={0.1}
+      position={position}
       rotation={rotation}
+      // occlude="blending"
+      transform
     >
-      <mesh position={[radius, 0, 0]} rotation={[0, 0, angleToRadians(90)]}>
-        <torusGeometry
-          args={[
-            radius * 2,
-            radius * 1.1,
-            blueprintMode ? 2 : 16,
-            blueprintMode ? 4 : 16,
-            angleToRadians(90),
-          ]}
-        />
-        <meshPhongMaterial
-          color={blueprintMode ? 'black' : color}
-          side={THREE.DoubleSide}
-          wireframe={blueprintMode}
-        />
-      </mesh>
-    </group>
+      <div className="letter-tag">
+        <span className="letter">{letter}</span>
+        {length && <span className="length"> - {length}</span>}
+      </div>
+    </Html>
   );
-}
-
-// PVC tube connector
-function TubeConnector({
-  position,
-  rotation,
-  radius,
-  length,
-  color = CONNECTOR_COLOR,
-}) {
-  return (
-    <mesh position={position} rotation={rotation}>
-      <cylinderGeometry args={[radius * 1.1, radius * 1.1, length, 32]} />
-      <meshPhongMaterial color={color} />
-    </mesh>
-  );
-}
-
-// Pipe strap
-function TubeStrap({ position, rotation, radius, color = CONNECTOR_COLOR }) {
-  return (
-    <mesh position={position} rotation={rotation}>
-      <cylinderGeometry args={[radius + 0.02, radius + 0.02, 0.03, 32]} />
-      <meshPhongMaterial color={color} />
-    </mesh>
-  );
-}
-
-// Pipe
-
-// Reservoir
-function Reservoir({ position, size, color = RESERVOIR_COLOR }) {
-  const reservoirRadius = size[0] * 3;
-  return (
-    <mesh position={position} rotation={[0, 0, 0]}>
-      <cylinderGeometry
-        args={[reservoirRadius, reservoirRadius, size[1], 32]}
-      />
-      <meshPhongMaterial color={TUBE_COLOR} transparent opacity={0.5} />
-      <mesh position={[0, -0.01, 0]}>
-        <cylinderGeometry
-          args={[
-            reservoirRadius - 0.01,
-            reservoirRadius - 0.01,
-            size[1] - 0.03,
-            32,
-          ]}
-        />
-        <meshPhongMaterial color={color} transparent opacity={0.5} />
-      </mesh>
-      <TubeCap
-        position={[0, size[1] / 2, 0]}
-        rotation={[0, 0, 0]}
-        radius={reservoirRadius}
-        color={TUBE_CAP_COLOR}
-      />
-    </mesh>
-  );
-}
+};
 
 // MAIN HYDROPONIC SYSTEM MODEL
-
 function HydroponicSystemModel({
   params,
   flipped,
@@ -244,6 +117,15 @@ function HydroponicSystemModel({
                     />
                   </>
                 )}
+                {/* tag for blueprint mode */}
+                {blueprintMode && (
+                  <LetterTag
+                    position={[0, 0, 0]}
+                    rotation={[0, angleToRadians(90), angleToRadians(-90)]}
+                    letter={'A'}
+                    length={`${(tubeLength * 100).toFixed(2)}cm`}
+                  />
+                )}
               </Tube>
 
               {/* Tube connections and end caps */}
@@ -271,7 +153,20 @@ function HydroponicSystemModel({
                       rotation={[0, 0, 0]}
                       radius={adjustedTubeRadius}
                       blueprintMode={blueprintMode}
-                    />
+                    >
+                      {/* tag for blueprint mode */}
+                      {blueprintMode && (
+                        <LetterTag
+                          position={[
+                            -adjustedTubeRadius,
+                            adjustedTubeRadius * 2,
+                            0,
+                          ]}
+                          rotation={[0, 0, 0]}
+                          letter={'F'}
+                        />
+                      )}
+                    </Elbow>
                     <Tube
                       position={[
                         -tubeLength / 2 - adjustedTubeRadius * 2,
@@ -286,7 +181,20 @@ function HydroponicSystemModel({
                         32,
                       ]}
                       blueprintMode={blueprintMode}
-                    />
+                    >
+                      {/* tag for blueprint mode */}
+                      {blueprintMode && (
+                        <LetterTag
+                          position={[0, 0, 0]}
+                          rotation={[0, angleToRadians(-90), 0]}
+                          letter={'B'}
+                          length={`${(
+                            (tubeSpacing - adjustedTubeRadius * 4) *
+                            100
+                          ).toFixed(2)}cm`}
+                        />
+                      )}
+                    </Tube>
                   </>
                 ) : (
                   <>
@@ -315,7 +223,20 @@ function HydroponicSystemModel({
                       rotation={[0, angleToRadians(180), angleToRadians(0)]}
                       radius={adjustedTubeRadius}
                       blueprintMode={blueprintMode}
-                    />
+                    >
+                      {/* tag for blueprint mode */}
+                      {blueprintMode && (
+                        <LetterTag
+                          position={[
+                            -adjustedTubeRadius,
+                            adjustedTubeRadius * 2,
+                            0,
+                          ]}
+                          rotation={[0, angleToRadians(180), 0]}
+                          letter={'F'}
+                        />
+                      )}
+                    </Elbow>
                     <Tube
                       position={[
                         tubeLength / 2 + adjustedTubeRadius * 2,
@@ -330,7 +251,20 @@ function HydroponicSystemModel({
                         32,
                       ]}
                       blueprintMode={blueprintMode}
-                    />
+                    >
+                      {/* tag for blueprint mode */}
+                      {blueprintMode && (
+                        <LetterTag
+                          position={[0, 0, 0]}
+                          rotation={[0, angleToRadians(-90), 0]}
+                          letter={'B'}
+                          length={`${(
+                            (tubeSpacing - adjustedTubeRadius * 4) *
+                            100
+                          ).toFixed(2)}cm`}
+                        />
+                      )}
+                    </Tube>
                   </>
                 )
               ) : isIndexEven ? (
@@ -345,7 +279,20 @@ function HydroponicSystemModel({
                     rotation={[0, 0, angleToRadians(0)]}
                     radius={adjustedTubeRadius}
                     blueprintMode={blueprintMode}
-                  />
+                  >
+                    {/* tag for blueprint mode */}
+                    {blueprintMode && (
+                      <LetterTag
+                        position={[
+                          -adjustedTubeRadius,
+                          adjustedTubeRadius * 2,
+                          0,
+                        ]}
+                        rotation={[0, 0, 0]}
+                        letter={'F'}
+                      />
+                    )}
+                  </Elbow>
                   <Tube
                     position={[
                       -tubeLength / 2 - adjustedTubeRadius * 2,
@@ -360,7 +307,20 @@ function HydroponicSystemModel({
                       32,
                     ]}
                     blueprintMode={blueprintMode}
-                  />
+                  >
+                    {/* tag for blueprint mode */}
+                    {blueprintMode && (
+                      <LetterTag
+                        position={[0, 0, 0]}
+                        rotation={[0, angleToRadians(-90), 0]}
+                        letter={'B'}
+                        length={`${(
+                          (tubeSpacing - adjustedTubeRadius * 4) *
+                          100
+                        ).toFixed(2)}cm`}
+                      />
+                    )}
+                  </Tube>
                   <Elbow
                     position={[
                       tubeLength / 2,
@@ -370,7 +330,20 @@ function HydroponicSystemModel({
                     rotation={[0, angleToRadians(180), angleToRadians(90)]}
                     radius={adjustedTubeRadius}
                     blueprintMode={blueprintMode}
-                  />
+                  >
+                    {/* tag for blueprint mode */}
+                    {blueprintMode && (
+                      <LetterTag
+                        position={[
+                          -adjustedTubeRadius,
+                          adjustedTubeRadius * 2,
+                          0,
+                        ]}
+                        rotation={[angleToRadians(180), 0, angleToRadians(-90)]}
+                        letter={'F'}
+                      />
+                    )}
+                  </Elbow>
                 </>
               ) : (
                 <>
@@ -384,7 +357,20 @@ function HydroponicSystemModel({
                     rotation={[0, 0, angleToRadians(90)]}
                     radius={adjustedTubeRadius}
                     blueprintMode={blueprintMode}
-                  />
+                  >
+                    {/* tag for blueprint mode */}
+                    {blueprintMode && (
+                      <LetterTag
+                        position={[
+                          -adjustedTubeRadius,
+                          adjustedTubeRadius * 2,
+                          0,
+                        ]}
+                        rotation={[0, 0, angleToRadians(-90)]}
+                        letter={'F'}
+                      />
+                    )}
+                  </Elbow>
                   <Tube
                     position={[
                       tubeLength / 2 + adjustedTubeRadius * 2,
@@ -399,7 +385,20 @@ function HydroponicSystemModel({
                       32,
                     ]}
                     blueprintMode={blueprintMode}
-                  ></Tube>
+                  >
+                    {/* tag for blueprint mode */}
+                    {blueprintMode && (
+                      <LetterTag
+                        position={[0, 0, 0]}
+                        rotation={[0, angleToRadians(-90), 0]}
+                        letter={'B'}
+                        length={`${(
+                          (tubeSpacing - adjustedTubeRadius * 4) *
+                          100
+                        ).toFixed(2)}cm`}
+                      />
+                    )}
+                  </Tube>
 
                   {/*  */}
                   <Elbow
@@ -411,7 +410,20 @@ function HydroponicSystemModel({
                     rotation={[0, angleToRadians(180), 0]}
                     radius={adjustedTubeRadius}
                     blueprintMode={blueprintMode}
-                  />
+                  >
+                    {/* tag for blueprint mode */}
+                    {blueprintMode && (
+                      <LetterTag
+                        position={[
+                          -adjustedTubeRadius,
+                          adjustedTubeRadius * 2,
+                          0,
+                        ]}
+                        rotation={[0, angleToRadians(180), 0]}
+                        letter={'F'}
+                      />
+                    )}
+                  </Elbow>
                 </>
               )}
 
@@ -453,7 +465,7 @@ function HydroponicSystemModel({
                       ) : isIndexEven ? (
                         <Plant2
                           position={[0, 0, -holeSize / 50]}
-                          rotation={[0, 0, angleToRadians(Math.random * 180)]}
+                          rotation={[0, 0, 0]}
                           scale={holeSize / 5}
                         />
                       ) : (
@@ -506,7 +518,24 @@ function HydroponicSystemModel({
             32,
           ]}
           blueprintMode={blueprintMode}
-        />
+        >
+          {/* tag for blueprint mode */}
+          {blueprintMode && (
+            <LetterTag
+              position={[0, 0, 0]}
+              rotation={[0, angleToRadians(-90), 0]}
+              letter={'C'}
+              length={`${(
+                (adjustedHeight +
+                  reservoirHeight -
+                  tubeSpacing +
+                  adjustedTubeRadius -
+                  0.02) *
+                100
+              ).toFixed(2)}cm`}
+            />
+          )}
+        </Tube>
         <Elbow
           position={[
             -adjustedWidth / 2 - 0.01,
@@ -519,7 +548,16 @@ function HydroponicSystemModel({
           rotation={[0, 0, 0]}
           radius={adjustedTubeRadius / 2}
           blueprintMode={blueprintMode}
-        />
+        >
+          {/* tag for blueprint mode */}
+          {blueprintMode && (
+            <LetterTag
+              position={[-adjustedTubeRadius / 2, adjustedTubeRadius, 0]}
+              rotation={[0, 0, 0]}
+              letter={'G'}
+            />
+          )}
+        </Elbow>
         {/* connect back to system */}
         {numTubes % 2 === 0 ? (
           // to the right
@@ -545,7 +583,19 @@ function HydroponicSystemModel({
                 32,
               ]}
               blueprintMode={blueprintMode}
-            />
+            >
+              {/* tag for blueprint mode */}
+              {blueprintMode && (
+                <LetterTag
+                  position={[0, 0, 0]}
+                  rotation={[0, angleToRadians(90), angleToRadians(-90)]}
+                  letter={'E'}
+                  length={`${(((adjustedWidth - tubeLength) / 2) * 100).toFixed(
+                    2
+                  )}cm`}
+                />
+              )}
+            </Tube>
             <Elbow
               position={[
                 -tubeLength / 2 + 0.01,
@@ -558,7 +608,16 @@ function HydroponicSystemModel({
               rotation={[0, angleToRadians(180), 0]}
               radius={adjustedTubeRadius / 2}
               blueprintMode={blueprintMode}
-            />
+            >
+              {/* tag for blueprint mode */}
+              {blueprintMode && (
+                <LetterTag
+                  position={[-adjustedTubeRadius / 2, adjustedTubeRadius, 0]}
+                  rotation={[0, angleToRadians(180), 0]}
+                  letter={'G'}
+                />
+              )}
+            </Elbow>
             <Tube
               position={[
                 -tubeLength / 2 + adjustedTubeRadius / 2 + 0.01,
@@ -576,7 +635,19 @@ function HydroponicSystemModel({
                 32,
               ]}
               blueprintMode={blueprintMode}
-            />
+            >
+              {/* tag for blueprint mode */}
+              {blueprintMode && (
+                <LetterTag
+                  position={[0, 0, 0]}
+                  rotation={[0, angleToRadians(-90), 0]}
+                  letter={'E'}
+                  length={`${(((adjustedWidth - tubeLength) / 2) * 100).toFixed(
+                    2
+                  )}cm`}
+                />
+              )}
+            </Tube>
           </>
         ) : (
           // to the left
@@ -602,7 +673,22 @@ function HydroponicSystemModel({
                 32,
               ]}
               blueprintMode={blueprintMode}
-            />
+            >
+              {/* tag for blueprint mode */}
+              {blueprintMode && (
+                <LetterTag
+                  position={[0, 0, 0]}
+                  rotation={[0, angleToRadians(90), angleToRadians(-90)]}
+                  letter={'E'}
+                  length={`${(
+                    ((adjustedWidth + tubeLength - adjustedTubeRadius * 2) /
+                      2.05) *
+                    100
+                  ).toFixed(2)}cm`}
+                />
+              )}
+            </Tube>
+
             <Elbow
               position={[
                 tubeLength / 2 - adjustedTubeRadius - 0.01,
@@ -615,7 +701,16 @@ function HydroponicSystemModel({
               rotation={[0, angleToRadians(180), 0]}
               radius={adjustedTubeRadius / 2}
               blueprintMode={blueprintMode}
-            />
+            >
+              {/* tag for blueprint mode */}
+              {blueprintMode && (
+                <LetterTag
+                  position={[-adjustedTubeRadius / 2, adjustedTubeRadius, 0]}
+                  rotation={[0, angleToRadians(180), 0]}
+                  letter={'G'}
+                />
+              )}
+            </Elbow>
             <Tube
               position={[
                 tubeLength / 2 - adjustedTubeRadius / 2 - 0.01,
@@ -634,7 +729,17 @@ function HydroponicSystemModel({
                 32,
               ]}
               blueprintMode={blueprintMode}
-            />
+            >
+              {/* tag for blueprint mode */}
+              {blueprintMode && (
+                <LetterTag
+                  position={[0, 0, 0]}
+                  rotation={[0, angleToRadians(-90), 0]}
+                  letter={'D'}
+                  length={`${(adjustedTubeRadius * 1.25 * 100).toFixed(2)}cm`}
+                />
+              )}
+            </Tube>
           </>
         )}
         {/* wall stand */}
@@ -707,7 +812,6 @@ function CustomOrbitControls({ blueprintMode }) {
 }
 
 // MAIN HYDROPONIC SYSTEM COMPONENT
-
 export default function HydroponicSystem({
   params,
   flipped,
