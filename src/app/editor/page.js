@@ -64,7 +64,7 @@ const EditorPage = () => {
   const headerRef = useRef(null);
   const controlsRef = useRef(null);
   const canvasRef = useRef(null);
-  const [topOffset, setTopOffset] = useState(0);
+  const [topOffset, setTopOffset] = useState(141);
 
   // set canvas heigt
   const setCanvasHeight = () => {

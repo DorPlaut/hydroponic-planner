@@ -6,10 +6,6 @@ export default function MaterialsList({ params, topOffset }) {
   const system = calculateHydroponicsSystem(params);
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    console.log(system);
-  }, []);
-
   const materials = [
     {
       title: 'Pipes',
