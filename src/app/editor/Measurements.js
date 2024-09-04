@@ -2,14 +2,17 @@ import calculateHydroponicsSystem from '@/utils/calculateHydroponicsSystem';
 import { cmToInches } from '@/utils/utils';
 import { useState } from 'react';
 
-export default function Measurements({ params }) {
+export default function Measurements({ params, topOffset }) {
   const system = calculateHydroponicsSystem(params);
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div
       className="measurements-container"
-      style={{ transform: isOpen ? 'translateX(0)' : 'translateX(25rem)' }}
+      style={{
+        transform: isOpen ? 'translateX(0)' : 'translateX(25rem)',
+        top: `${topOffset}px`,
+      }}
     >
       <button
         className="btn measurements-toggle"

@@ -16,6 +16,8 @@ export default function calculateHydroponicsSystem(params) {
 
   const verticalTubeLength = tubeSpacing - adjustedTubeRadius * 4;
 
+  const wallStandHeight = adjustedHeight - tubeSpacing;
+
   const pumpTubeLength =
     adjustedHeight +
     reservoirHeight * 100 -
@@ -32,7 +34,7 @@ export default function calculateHydroponicsSystem(params) {
     dimensions: {
       width: adjustedWidth,
       height: adjustedHeight,
-      depth: adjustedTubeRadius * 4, // Assuming depth is 4 times the tube radius
+      depth: adjustedTubeRadius * 4,
     },
     tubes: {
       mainTubes: {
@@ -86,6 +88,18 @@ export default function calculateHydroponicsSystem(params) {
       capacity: reservoirSize,
       height: reservoirHeight * 100, // Convert back to cm
     },
+    wallStand: {
+      planks: {
+        quantity: 2,
+        langth: wallStandHeight,
+        width: 5,
+      },
+      tubeStraps: {
+        quantity: numTubes * 2,
+        diameter: adjustedTubeRadius * 2,
+      },
+    },
+    // Additional information
     misc: {
       numberOfPlants,
       holeSpacing: tubeLength / (holesPerTube + 1),

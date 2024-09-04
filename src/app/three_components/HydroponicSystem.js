@@ -14,7 +14,7 @@ import { Plant2 } from './plants/Plant2';
 import { Elbow, Reservoir, Tube, TubeCap, TubeStrap } from './SystemParts';
 
 // tag letter for blurprint mode
-const LetterTag = ({ position, rotation, letter, length }) => {
+const LetterTag = ({ position, rotation, letter, length, flipped }) => {
   return (
     <Html
       scale={0.1}
@@ -23,7 +23,10 @@ const LetterTag = ({ position, rotation, letter, length }) => {
       // occlude="blending"
       transform
     >
-      <div className="letter-tag">
+      <div
+        className="letter-tag"
+        style={{ transform: flipped ? 'scale(-1, 1)' : 'scale(1)' }}
+      >
         <span className="letter">{letter}</span>
         {length && <span className="length"> - {length}</span>}
       </div>
@@ -120,6 +123,7 @@ function HydroponicSystemModel({
                 {/* tag for blueprint mode */}
                 {blueprintMode && (
                   <LetterTag
+                    flipped={flipped}
                     position={[0, 0, 0]}
                     rotation={[0, angleToRadians(90), angleToRadians(-90)]}
                     letter={'A'}
@@ -157,6 +161,7 @@ function HydroponicSystemModel({
                       {/* tag for blueprint mode */}
                       {blueprintMode && (
                         <LetterTag
+                          flipped={flipped}
                           position={[
                             -adjustedTubeRadius,
                             adjustedTubeRadius * 2,
@@ -185,6 +190,7 @@ function HydroponicSystemModel({
                       {/* tag for blueprint mode */}
                       {blueprintMode && (
                         <LetterTag
+                          flipped={flipped}
                           position={[0, 0, 0]}
                           rotation={[0, angleToRadians(-90), 0]}
                           letter={'B'}
@@ -227,6 +233,7 @@ function HydroponicSystemModel({
                       {/* tag for blueprint mode */}
                       {blueprintMode && (
                         <LetterTag
+                          flipped={flipped}
                           position={[
                             -adjustedTubeRadius,
                             adjustedTubeRadius * 2,
@@ -255,6 +262,7 @@ function HydroponicSystemModel({
                       {/* tag for blueprint mode */}
                       {blueprintMode && (
                         <LetterTag
+                          flipped={flipped}
                           position={[0, 0, 0]}
                           rotation={[0, angleToRadians(-90), 0]}
                           letter={'B'}
@@ -283,6 +291,7 @@ function HydroponicSystemModel({
                     {/* tag for blueprint mode */}
                     {blueprintMode && (
                       <LetterTag
+                        flipped={flipped}
                         position={[
                           -adjustedTubeRadius,
                           adjustedTubeRadius * 2,
@@ -311,6 +320,7 @@ function HydroponicSystemModel({
                     {/* tag for blueprint mode */}
                     {blueprintMode && (
                       <LetterTag
+                        flipped={flipped}
                         position={[0, 0, 0]}
                         rotation={[0, angleToRadians(-90), 0]}
                         letter={'B'}
@@ -334,6 +344,7 @@ function HydroponicSystemModel({
                     {/* tag for blueprint mode */}
                     {blueprintMode && (
                       <LetterTag
+                        flipped={flipped}
                         position={[
                           -adjustedTubeRadius,
                           adjustedTubeRadius * 2,
@@ -361,6 +372,7 @@ function HydroponicSystemModel({
                     {/* tag for blueprint mode */}
                     {blueprintMode && (
                       <LetterTag
+                        flipped={flipped}
                         position={[
                           -adjustedTubeRadius,
                           adjustedTubeRadius * 2,
@@ -389,6 +401,7 @@ function HydroponicSystemModel({
                     {/* tag for blueprint mode */}
                     {blueprintMode && (
                       <LetterTag
+                        flipped={flipped}
                         position={[0, 0, 0]}
                         rotation={[0, angleToRadians(-90), 0]}
                         letter={'B'}
@@ -414,6 +427,7 @@ function HydroponicSystemModel({
                     {/* tag for blueprint mode */}
                     {blueprintMode && (
                       <LetterTag
+                        flipped={flipped}
                         position={[
                           -adjustedTubeRadius,
                           adjustedTubeRadius * 2,
@@ -522,6 +536,7 @@ function HydroponicSystemModel({
           {/* tag for blueprint mode */}
           {blueprintMode && (
             <LetterTag
+              flipped={flipped}
               position={[0, 0, 0]}
               rotation={[0, angleToRadians(-90), 0]}
               letter={'C'}
@@ -552,6 +567,7 @@ function HydroponicSystemModel({
           {/* tag for blueprint mode */}
           {blueprintMode && (
             <LetterTag
+              flipped={flipped}
               position={[-adjustedTubeRadius / 2, adjustedTubeRadius, 0]}
               rotation={[0, 0, 0]}
               letter={'G'}
@@ -587,6 +603,7 @@ function HydroponicSystemModel({
               {/* tag for blueprint mode */}
               {blueprintMode && (
                 <LetterTag
+                  flipped={flipped}
                   position={[0, 0, 0]}
                   rotation={[0, angleToRadians(90), angleToRadians(-90)]}
                   letter={'E'}
@@ -612,6 +629,7 @@ function HydroponicSystemModel({
               {/* tag for blueprint mode */}
               {blueprintMode && (
                 <LetterTag
+                  flipped={flipped}
                   position={[-adjustedTubeRadius / 2, adjustedTubeRadius, 0]}
                   rotation={[0, angleToRadians(180), 0]}
                   letter={'G'}
@@ -639,6 +657,7 @@ function HydroponicSystemModel({
               {/* tag for blueprint mode */}
               {blueprintMode && (
                 <LetterTag
+                  flipped={flipped}
                   position={[0, 0, 0]}
                   rotation={[0, angleToRadians(-90), 0]}
                   letter={'E'}
@@ -677,6 +696,7 @@ function HydroponicSystemModel({
               {/* tag for blueprint mode */}
               {blueprintMode && (
                 <LetterTag
+                  flipped={flipped}
                   position={[0, 0, 0]}
                   rotation={[0, angleToRadians(90), angleToRadians(-90)]}
                   letter={'E'}
@@ -705,6 +725,7 @@ function HydroponicSystemModel({
               {/* tag for blueprint mode */}
               {blueprintMode && (
                 <LetterTag
+                  flipped={flipped}
                   position={[-adjustedTubeRadius / 2, adjustedTubeRadius, 0]}
                   rotation={[0, angleToRadians(180), 0]}
                   letter={'G'}
@@ -733,6 +754,7 @@ function HydroponicSystemModel({
               {/* tag for blueprint mode */}
               {blueprintMode && (
                 <LetterTag
+                  flipped={flipped}
                   position={[0, 0, 0]}
                   rotation={[0, angleToRadians(-90), 0]}
                   letter={'D'}

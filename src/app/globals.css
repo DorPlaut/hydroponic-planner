@@ -7,6 +7,9 @@
 
   --borderRadius: 10px;
   /* colors */
+  --primaryColor: #31aa69;
+  --seconderyColor: #1a613d;
+  --white: #f0fff4;
   --redLight: rgb(255, 184, 184);
   --redDark: rgb(114, 2, 2);
   --greenLight: rgb(184, 238, 184);
@@ -28,9 +31,15 @@ body {
   position: relative;
   height: 100vh;
   width: 100vw;
+  background: var(--white);
 }
 
 /* reusable classes */
+a {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
 .btn {
   border: none;
   cursor: pointer;
@@ -40,21 +49,30 @@ body {
 }
 /* header */
 
-h1 {
+.title {
+  font-size: 2.5rem;
   text-align: center;
-  color: #333;
+  font-weight: bold;
+  color: var(--primaryColor);
+  padding: 0.5rem;
 }
 
 /* Canvas - hydroponic model */
 .canvas-container {
   position: relative;
   width: 100%;
-  background: rgb(255, 255, 255);
+  background: var(--white);
   z-index: 0;
 }
 
 /* Controls */
 .controls-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 0.5rem;
+  background: white;
+  box-shadow: 0 4px 9px rgba(0, 0, 0, 0.1);
 }
 .controls {
   display: flex;
@@ -67,15 +85,19 @@ h1 {
   flex-direction: column;
   justify-content: center;
   border-radius: var(--borderRadius);
-  background: black;
-  color: white;
+  background: var(--seconderyColor);
+  color: var(--white);
   height: 3rem;
   padding: 0.5rem;
   margin: 0.25rem;
   font-size: 0.8rem;
 }
+.control label {
+  margin: 0.2rem;
+}
 .control input {
   padding: 0.25rem;
+  margin-bottom: 0.25rem;
   border-radius: var(--borderRadius);
   border: none;
 }
@@ -86,16 +108,16 @@ h1 {
   justify-content: center;
   align-items: center;
   border-radius: var(--borderRadius);
-  background: black;
-  color: white;
+  background: var(--seconderyColor);
+  color: var(--white);
   height: 3rem;
   padding: 0.5rem;
   margin: 0.25rem;
-  border: solid 3px black;
+  border: solid 3px var(--seconderyColor);
 }
 .control-btn:hover {
-  color: black;
-  background: white;
+  color: var(--seconderyColor);
+  background: var(--white);
 }
 
 /* side panels */
@@ -104,10 +126,10 @@ h1 {
   position: absolute;
   width: 25rem;
   z-index: 2;
-  background: black;
+  background: var(--seconderyColor);
   padding: 1rem;
   transition: 1s;
-  bottom: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 .measurements-container {
   right: 0;
@@ -120,18 +142,23 @@ h1 {
 .measurements,
 .materials {
   position: relative;
-  background: black;
-  color: white;
+  color: var(--white);
   padding-left: 1rem;
 }
 .measurements li,
 .materials li {
-  padding: 0.3rem 0;
+  padding: 0.15rem 0;
+  font-size: 0.8rem;
+}
+.measurements h3,
+.materials h3 {
+  font-size: 1rem;
+  text-decoration: underline;
 }
 .measurements-toggle,
 .materials-toggle {
-  background: black;
-  color: white;
+  background: var(--seconderyColor);
+  color: var(--white);
   padding: 0.5rem;
   position: absolute;
   top: 0;
@@ -162,6 +189,76 @@ h1 {
 }
 .letter-tag .length {
   font-size: 0.5rem;
+}
+
+/* lLANDING PAGE */
+.container {
+  min-height: 100vh;
+  background-color: #f0fff4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: var(--borderRadius);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 40rem;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.paragraph {
+  margin-bottom: 1rem;
+}
+
+.subheading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.list {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.landing-btn {
+  display: inline-block;
+  background-color: var(--seconderyColor);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--borderRadius);
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.landing-btn:hover {
+  background-color: #2f855a;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--seconderyColor);
+}
+footer a {
+  transition: 0.3s;
+}
+footer a:hover {
+  color: var(--primaryColor);
 }
 
 /* media quaryes */

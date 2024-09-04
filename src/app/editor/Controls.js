@@ -21,12 +21,13 @@ export default function Controls({
     <div className="controls">
       {/* <h2>Setup Parameters</h2> */}
       {Object.entries(params).map(([key, value]) => {
-        const { min, max, step } = paramConstraints[key];
+        const { name, min, max, step } = paramConstraints[key];
 
         return (
           <div className="control" key={key}>
             <label htmlFor={key}>
-              {key.charAt(0).toUpperCase() + key.slice(1)}:
+              {/* {key.charAt(0).toUpperCase() + key.slice(1)}: */}
+              {name}
             </label>
             <input
               type="number"

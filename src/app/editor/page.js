@@ -16,13 +16,18 @@ const EditorPage = () => {
     slope: 2, // in percentage (1% to 3% recommended)
   });
   const paramConstraints = {
-    width: { min: 100, max: 500, step: 5 },
-    height: { min: 100, max: 500, step: 5 },
-    numTubes: { min: 1, max: 10, step: 1 },
-    holesPerTube: { min: 1, max: 10, step: 1 },
-    holeSize: { min: 2.5, max: 10, step: 0.5 },
-    tubeRadius: { min: 5, max: 20, step: 0.5 },
-    slope: { min: 0, max: 3, step: 0.1 },
+    width: { name: 'Width (cm)', min: 100, max: 500, step: 5 },
+    height: { name: 'Height (cm)', min: 100, max: 500, step: 5 },
+    numTubes: { name: 'Number Of Tubes', min: 1, max: 10, step: 1 },
+    holesPerTube: { name: 'Plants Per Tube', min: 1, max: 10, step: 1 },
+    holeSize: {
+      name: 'Hole Diameter (cm)',
+      min: 2.5,
+      max: 10,
+      step: 0.5,
+    },
+    tubeRadius: { name: 'Tube Diameter (cm)', min: 5, max: 20, step: 0.5 },
+    slope: { name: 'Slope (%)', min: 0, max: 3, step: 0.1 },
   };
 
   const [flipped, setFlipped] = useState(false);
@@ -59,12 +64,14 @@ const EditorPage = () => {
   const headerRef = useRef(null);
   const controlsRef = useRef(null);
   const canvasRef = useRef(null);
+  const [topOffset, setTopOffset] = useState(0);
 
   // set canvas heigt
   const setCanvasHeight = () => {
     const headerHeight = headerRef.current.offsetHeight;
     const controlsHeight = controlsRef.current.offsetHeight;
     canvasRef.current.style.height = `calc(100vh - ${headerHeight}px - ${controlsHeight}px)`;
+    setTopOffset(headerHeight + controlsHeight + 5);
   };
   useEffect(() => {
     setCanvasHeight();
@@ -77,7 +84,7 @@ const EditorPage = () => {
   return (
     <div className="app-container">
       <header className="header" ref={headerRef}>
-        <h1>Hydroponic Setup Builder and Planner</h1>
+        <h1 className="title">Hydroponic Setup Builder and Planner</h1>
       </header>
       <div className="controls-container" ref={controlsRef}>
         <Controls
@@ -105,8 +112,8 @@ const EditorPage = () => {
           showPlants={showPlants}
         />
       </div>
-      <Measurements params={params} />
-      <MaterialsList params={params} />
+      <Measurements params={params} topOffset={topOffset} />
+      <MaterialsList params={params} topOffset={topOffset} />
     </div>
   );
 };
