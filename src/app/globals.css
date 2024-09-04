@@ -139,11 +139,13 @@ a {
   left: 0;
   border-radius: 0 0 var(--borderRadius) 0;
 }
+.measurements {
+  padding-left: 1rem;
+}
 .measurements,
 .materials {
   position: relative;
   color: var(--white);
-  padding-left: 1rem;
 }
 .measurements li,
 .materials li {
@@ -179,6 +181,31 @@ a {
 .materials ol {
   list-style: upper-alpha;
 }
+
+.list-actions {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 2;
+  display: flex;
+}
+.list-btn {
+  background: var(--white);
+  border-radius: 50%;
+  color: var(--seconderyColor);
+  height: 1.5rem;
+  width: 1.5rem;
+  margin: 0.5rem 0.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.list-btn:hover {
+  background: var(--primaryColor);
+  color: var(--white);
+}
+
+/* Blue print mode model tags */
 
 .letter-tag {
   background: white;

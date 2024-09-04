@@ -1,5 +1,6 @@
 import calculateHydroponicsSystem from '@/utils/calculateHydroponicsSystem';
 import { useEffect, useState } from 'react';
+import ListActions from './ListActions';
 
 export default function MaterialsList({ params, topOffset }) {
   const system = calculateHydroponicsSystem(params);
@@ -120,6 +121,7 @@ export default function MaterialsList({ params, topOffset }) {
       >
         {isOpen ? 'Hide' : 'Show'} materials list
       </button>
+      <ListActions materials={materials} />
       <div className="materials">
         <h2>Materials List</h2>
         {materials.map((section, sectionIndex) => {
